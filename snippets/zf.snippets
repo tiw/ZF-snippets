@@ -1,0 +1,541 @@
+################### Classes ###################
+
+##
+# if your project allows it, it's better to use
+# ZendTool for generating Forms/Controllers/Models
+##
+
+snippet snform 
+	class ${1:`strpart(@%, strridx('@%', '_'), strlen(@%) - 3)`} extends ${2:MyProject}_Form
+	{
+		/**
+		 * Overrides init() in Zend_Form
+		 * 
+		 * @access public
+		 * @return void
+		 */
+		public function init() {
+			// *always* init the parent
+			parent::init();
+
+			// set the form's method
+			$this->setMethod('${3:post}');
+			
+			${4:// form fields}
+		}
+	}
+
+snippet sncontroller 
+	class ${1:`strpart(@%, strridx('@%', '_'), strlen(@%) - 3)`} extends ${2:MyProject}_Controller
+	{
+		/**
+		 * Overrides Zend_Controller_Action::init()
+		 *
+		 * @access public
+		 * @return void
+		 */
+		public function init()
+		{
+			// *always* init the parent
+			parent::init();
+
+			${3:// code}
+		}
+
+		/**
+		 * Controller's entry point
+		 *
+		 * @access public
+		 * @return void
+		 */
+		public function indexAction()
+		{
+			$translator = Zend_Registry::get('Zend_Translate');
+			$this->title = $translator->translate('${4: //Action}');
+			${5:// code}	
+		}
+	}
+
+snippet sntable
+	class `substitute(strpart(strpart(expand('%:p'), 0, strlen(expand('%:p')) - 4), strridx(expand('%:p'), 'library') + 8), '\/', '_', 'g')` extends ${1}_Table
+	{
+		/**
+		 * Column for the primary key
+		 *
+		 * @var string
+		 * @access protected
+		 */
+		protected $_primary = 'id';
+
+		/**
+		 * Holds the table's name
+		 *
+		 * @var string
+		 * @access protected
+		 */
+		protected $_name = '${2}';
+
+		/**
+		 * Holds the associated model class
+		 *
+		 * @var string
+		 * @access protected
+		 */
+		protected $_rowClass = '${3}'; 
+
+		/**
+		 * Holds the table's dependencies
+		 * 
+		 * @var array
+		 * @access protected
+		 */
+		protected $_dependentTables = array();
+
+		/**
+		 * Holds the table's reference map
+		 * 
+		 * @var array
+		 * @access protected
+		 */
+		protected $_referenceMap = array();
+
+		${4://code}
+	}
+
+snippet snmodel
+	class `substitute(strpart(strpart(expand('%:p'), 0, strlen(expand('%:p')) - 4), strridx(expand('%:p'), 'library') + 8), '\/', '_', 'g')` extends ${1:MyProject}_Model
+	{
+		
+	}
+	
+snippet snviewhelper
+	class `substitute(strpart(strpart(expand('%:p'), 0, strlen(expand('%:p')) - 4), strridx(expand('%:p'), 'library') + 8), '\/', '_', 'g')` extends ${1:Zend_View_Helper_Abstract}
+	{
+		/**
+		 * Convenience method
+		 * call $this->`substitute(strpart(@%, strridx('@%', '_'), strlen(@%) - 3), '\(\<\w\+\>\)', '\l\1', '')`() in the view to access 
+		 * the helper
+		 *
+		 * @access public
+		 * @return string
+		 */
+		public function `substitute(strpart(@%, strridx('@%', '_'), strlen(@%) - 3), '\(\<\w\+\>\)', '\l\1', '')`(${2})
+		{
+			${3:// code}
+		}
+	}
+
+snippet snlibraryclass
+	class `substitute(strpart(strpart(expand('%:p'), 0, strlen(expand('%:p')) - 4), strridx(expand('%:p'), 'library') + 8), '\/', '_', 'g')` ${1:extends ${2}}
+	{
+		${3:// code}	
+	}
+
+################### Form Elements ###################
+
+snippet snformbutton
+	$${1:button} = new Zend_Form_Element_Button('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+		)
+	);
+	$this->addElement($$1);
+	${4}
+snippet snformcaptcha
+	$${1:captcha} = new Zend_Form_Element_Captcha('${2}');
+	$$1->setOptions(
+		array(
+			'label'		 => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+			'captcha'    => array(
+								'captcha' => '${4:Figlet}',
+								'wordLen' => ${5:6},
+								'timeout' => ${6:300},
+							),
+		)
+	);
+	$this->addElement($$1);
+	${7}
+snippet snformcheckbox
+	$${1:checkbox} = new Zend_Form_Element_Checkbox('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+		)
+	);
+	$this->addElement($$1);
+	${4}
+snippet snformfile
+	$${1:file} = new Zend_Form_Element_File('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+			'destination' => '/${4:tmp}',
+		)
+	);
+	$this->addElement($$1);
+	${5}
+snippet snformhash
+	$${1:hash} = new Zend_Form_Element_Hash('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+			'salt' => '${4:ff3496dd79d2772db3b1e344fbecf03c}',
+		)
+	);
+	$this->addElement($$1);
+	${5}
+snippet snformhidden
+	$${1:id} = new Zend_Form_Element_Hidden('${2:id}');
+	$$1->setOptions(
+		array(
+			'required' => true,
+			'validators' => array(
+				// either empty or numeric
+				new Zend_Validate_Regex('/^\d*$/'),
+			),
+		)
+	);
+	$this->addElement($$1);
+	${3}
+snippet snformimage
+	$${1:image} = new Zend_Form_Element_Image('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+		)
+	);
+	$this->addElement($$1);
+	${4}
+snippet snformmulticheckbox
+	$${1:multicheckbox} = new Zend_Form_Element_MultiCheckbox('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+			'multiOptions' => ${4},
+		)
+	);
+	$this->addElement($$1);
+	${5}
+snippet snformmultiselect
+	$${1:multiselect} = new Zend_Form_Element_MultiSelect('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+			'multiOptions' => ${4},
+		)
+	);
+	$this->addElement($$1);
+	${5}
+snippet snformpassword
+	$${1:password} = new Zend_Form_Element_Password('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+		)
+	);
+	$this->addElement($$1);
+	${4}
+snippet snformradio
+	$${1:radio} = new Zend_Form_Element_Radio('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+			'multiOptions' => ${4},
+		)
+	);
+	$this->addElement($$1);
+snippet snformreset
+	$${1:reset} = new Zend_Form_Element_Reset('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+		)
+	);
+	$this->addElement($$1);
+	${4}
+snippet snformselect
+	$${1:select} = new Zend_Form_Element_Select('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+			'multiOptions' => ${4},
+		)
+	);
+	$this->addElement($$1);
+	${5}
+snippet snformsubmit
+	$${1:submit} = new Zend_Form_Element_Submit('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+		)
+	);
+	$this->addElement($$1);
+	${4}
+snippet snformtext
+	$${1:text} = new Zend_Form_Element_Text('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+		)
+	);
+	$this->addElement($$1);
+	${4}
+snippet snformtextarea
+	$${1:textarea} = new Zend_Form_Element_Textarea('${2}');
+	$$1->setOptions(
+		array(
+			'label'      => '${3}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+		)
+	);
+	$this->addElement($$1);
+	${4}
+snippet snformelement
+	$${1:element} = new ${2}('${3}');
+	$$1->setOptions(
+		array(
+			'label'      => '${4}',
+			'required'   => true,
+			'filters'    => array(
+								'StringTrim',
+								'StripTags',
+							),
+			'validators' => array(
+								'NotEmpty',
+							),
+		)
+	);
+	$this->addElement($$1);
+	${5}
+
+
+################### Model Snippets ###################
+snippet sndbselect
+	$select = new Zend_Db_Select($this->_db);
+	$select->from($this->_name);
+	$select->where('${1}', ${2});
+snippet sndbreset
+	$select->reset(Zend_Db_Table::COLUMNS);
+	$select->columns(array('${1}'));
+snippet snfetchall
+	$${1:rows} = $this->_db->fetchAll($select);
+snippet snfetchrow
+	$${1:row} = $this->_db->fetchRow($select);
+snippet snfetchone
+	$${1:item} = $this->_db->fetchOne($select);
+snippet snreturnall 
+	return $this->_db->fetchAll($select);
+snippet snreturnrow 
+	return $this->_db->fetchRow($select);
+snippet snreturnone
+	return $this->_db->fetchOne($select);
+
+################### Misc Snippets ###################
+snippet sncheckform
+	if ($this->getRequest()->isPost()) {
+		if($${1:form}->isValid($this->getRequest()->getPost())) {
+			${2: // code}
+		}
+	}
+
+snippet snformupload
+	$this->setAttrib('enctype', 'multipart/form-data');
+
+snippet snflash
+	$this->_helper->flashMessenger(
+		array(
+			'${1:msg-success}' => $translator->translate('${2:the message}'),
+		)
+	);
+	$this->_redirect('${3:url}');
+
+snippet sngtr
+	$translator = Zend_Registry::get('Zend_Translate');
+
+snippet sntranslate
+	$translator->translate('${1://...to be translated}');
+
+snippet snselect
+	/**
+	 * Returns a Zend_Db_Table_Select object that selects
+	 * ${1: all objects}
+	 *
+	 * @access public
+	 * @return Zend_Db_Table_Select
+	 */
+	public function select${2:ByField}(${3:})
+	{
+		$select = $this->select()
+					   ->where('${4:field}', ${5:$3});
+		return $select;
+	}
+	${6:}
+
+
+snippet sncaction
+	/**
+	 * ${1:Method description}
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function ${2:my}Action()
+	{
+		$translator = Zend_Registry::get('Zend_Translate');
+		$this->title = $translator->translate('${3:Action title}');
+
+		${4:// code}
+	}
+
+snippet snfile
+	<?php
+	/**
+	 * 
+	 *
+	 *
+	 * @category 
+	 * @package
+	 * @subpackage
+	 * @copyright 
+	 */
+
+snippet snrefmap 
+	'${1}' => array(
+		'columns'       => '${2}',
+		'refTableClass' => '${3}',
+		'refColumns'    => '${4}',
+	),
+	${5}
+
+snippet setget
+	/**
+	 * Get ${1}
+	 *
+	 * @access public
+	 * @return ${2}
+	 */
+	public function get${3}()
+	{
+		return $this->_${4};	
+	}
+
+	/**
+	 * Set $1
+	 *
+	 * @param $2 $4
+	 * @access public
+	 * @return ${5}
+	 */
+	public function set$3($4)
+	{
+		$this->_$4 = $4;
+		${6:return $this;}
+	}
+	${7}
